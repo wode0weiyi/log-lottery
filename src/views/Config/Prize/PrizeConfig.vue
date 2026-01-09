@@ -5,6 +5,7 @@ import { VueDraggable } from "vue-draggable-plus";
 import { useI18n } from "vue-i18n";
 import EditSeparateDialog from "@/components/NumberSeparate/EditSeparateDialog.vue";
 import PageHeader from "@/components/PageHeader/index.vue";
+import ImageSync from "@/components/ImageSync/index.vue";
 import GuaranteedWinnersDialog from "./GuaranteedWinnersDialog.vue";
 import { usePrizeConfig } from "./usePrizeConfig";
 
@@ -177,9 +178,9 @@ function handleUpdateGuaranteedWinners(guaranteedWinners: number[]) {
             <div
               class="w-10 h-10 rounded-lg border-2 border-slate-600 overflow-hidden bg-slate-700 flex items-center justify-center hover:border-primary transition-all shadow-md"
             >
-              <img
+              <ImageSync
                 v-if="item.picture.url"
-                :src="item.picture.url as string"
+                :img-item="item.picture"
                 class="w-full h-full object-cover"
               />
               <div v-else class="text-lg">🖼️</div>

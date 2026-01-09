@@ -1,42 +1,50 @@
-<script setup lang='ts'>
-import type { IFileData } from '../FileUpload/type'
-import type { IImage } from '@/types/storeType'
-import localforage from 'localforage'
-import { onMounted, ref } from 'vue'
+<script setup lang="ts">
+import type { IFileData } from "../FileUpload/type";
+import type { IImage } from "@/types/storeType";
+import localforage from "localforage";
+import { onMounted, ref, watch } from "vue";
 
 interface IProps {
-    imgItem: IImage
+  imgItem: IImage;
 }
-const props = defineProps<IProps>()
+const props = defineProps<IProps>();
 const imageDbStore = localforage.createInstance({
-    name: 'imgStore',
-})
+  name: "imgStore",
+});
 
-const imgUrl = ref('')
+const imgUrl = ref("");
 
 async function getImageStoreItem(item: IImage): Promise<string> {
-    let image = ''
-    if (item.url === 'Storage') {
-        const key = item.id
-        const imageData = await imageDbStore.getItem<IFileData>(key)
-        image = URL.createObjectURL(imageData?.data as Blob)
+  let image = "";
+  if (item.url === "Storage") {
+    const key = item.id;
+    const imageData = await imageDbStore.getItem<IFileData>(key);
+    if (imgUrl.value && imgUrl.value.startsWith("blob:")) {
+      URL.revokeObjectURL(imgUrl.value);
     }
-    else {
-        image = item.url as string
-    }
+    image = URL.createObjectURL(imageData?.data as Blob);
+  } else {
+    image = item.url as string;
+  }
 
-    return image
+  return image;
 }
 
 onMounted(async () => {
-    imgUrl.value = await getImageStoreItem(props.imgItem)
-})
+  imgUrl.value = await getImageStoreItem(props.imgItem);
+});
+
+watch(
+  () => props.imgItem,
+  async (val) => {
+    imgUrl.value = await getImageStoreItem(val);
+  },
+  { deep: true }
+);
 </script>
 
 <template>
-  <img :src="imgUrl" alt="Image" class="object-cover h-full rounded-xl">
+  <img :src="imgUrl" alt="Image" class="object-cover h-full rounded-xl" />
 </template>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang="scss" scoped></style>
